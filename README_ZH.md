@@ -200,3 +200,35 @@
 
 
 
+# 其他
+
+```bash
+
+# 列出所有的容器 ID
+
+docker ps -aq
+
+# 停止所有的容器
+
+docker stop $(docker ps -aq)
+
+# 删除所有的容器
+
+docker rm $(docker ps -aq)
+
+# 删除所有的镜像
+docker rmi $(docker images -q)
+
+docker build -t ui:v1.0 .
+
+docker create -p 8180:8180 --name ui-v1.0 ui:v1.0
+
+docker start ui-v1.0
+
+docker ps -a
+
+docker logs ui-v1.0
+```
+
+
+

@@ -33,7 +33,7 @@ RUN set -eux \
 # copy 配置以及启动文件
 RUN mkdir ext-config; \
     mkdir ext-libs;
-COPY application.yml ext-config/
+# COPY application.yml ext-config/
 COPY log4j2.xml config/
 COPY docker-entrypoint.sh .
 

@@ -13,7 +13,9 @@ ENV JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk" \
     TIME_ZONE="Asia/Shanghai" \
     JAVA_OPTS=" -Xms256M " \
     SW_OAP_ADDRESS="http://oap:12800" \
-    SW_TIMEOUT="20000"
+    SW_TIMEOUT="20000" \
+    AUTH_URI="http://10.137.37.194:7777" \
+    AUTH_PATH="ath=/user/**"
 
 # 环境变量=默认值
 ARG SK_VERSION=8.8.1
@@ -30,10 +32,11 @@ RUN set -x \
 ADD ./apache-skywalking-apm-bin.tar.gz /opt/
 RUN set -eux; \
     rm -rf "config"; rm -rf "oap-libs"; \
-    rm -rf "agent";
+    rm -rf "agent"; rm -rf webapp/webapp.yml
 
 # copy 配置以及启动文件
-COPY ./config/logback.xml webapp/
+COPY webapp.yml webapp/
+COPY logback.xml webapp/
 COPY docker-entrypoint.sh .
 
 

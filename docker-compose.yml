@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
     container_name: elasticsearch
     restart: always
     ports:
@@ -22,8 +22,9 @@ services:
         hard: -1
     volumes:
       - data:/usr/share/elasticsearch/data
+      # - "/opt/data/es:/usr/share/elasticsearch/data"
   oap:
-    image: apache/skywalking-oap-server:${SW_VERSION}-${IMAGE_TAG}
+    build: ./build/sk8/oap
     container_name: oap
     depends_on:
       - elasticsearch
@@ -33,20 +34,20 @@ services:
     ports:
       - 11800:11800
       - 12800:12800
-    healthcheck:
-      test: ["CMD-SHELL", "/skywalking/bin/swctl ch"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+    # healthcheck:
+    #   test: ["CMD-SHELL", "/skywalking/bin/swctl ch"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 40s
     environment:
-      SW_STORAGE: ${SW_STORAGE}
+      SW_STORAGE: elasticsearch7
       SW_STORAGE_ES_CLUSTER_NODES: elasticsearch:9200
       SW_HEALTH_CHECKER: default
-      SW_TELEMETRY: prometheus
+      # SW_TELEMETRY: prometheus
       JAVA_OPTS: "-Xms2048m -Xmx2048m"
   ui:
-    image: apache/skywalking-ui:${SW_VERSION}
+    build: ./build/sk8/ui
     container_name: ui
     depends_on:
       - oap
@@ -57,7 +58,9 @@ services:
       - 8180:8180
     environment:
       SW_OAP_ADDRESS: http://oap:12800
-
+      AUTH_URI: http://10.137.37.194:7777
+      AUTH_PATH: Path=/user/**
+# 在多个容器中共享 volumes，就要在一级 volumes 中定义
 volumes:
   data:
     driver: local
