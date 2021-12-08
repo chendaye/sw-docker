@@ -13,9 +13,8 @@ if [[ ! -z "$SW_OAP_ADDRESS" ]]; then
 fi
 
 # auth
-JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.gateway.routes[1].id=auth"
-JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.gateway.routes[1].uri=${AUTH_URI}"
-JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.gateway.routes[1].predicates[0]=${AUTH_PATH}"
+# JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.gateway.routes[1].id=auth"
+# JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.gateway.routes[1].uri=${AUTH_URI}"
+# JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.gateway.routes[1].predicates[0]=${AUTH_PATH}"
 
-# exec java  ${JAVA_OPTS} -jar webapp/skywalking-webapp.jar "$@"
-exec java   -Dspring.cloud.discovery.client.simple.instances.oap-service[1].uri=http://oap:1280 -Dspring.cloud.gateway.routes[1].uri=http://10.137.37.194:7777 -Dspring.cloud.gateway.routes[1].id=auth -Dspring.cloud.gateway.routes[1].predicates[0]=Path=/user/** -jar webapp/skywalking-webapp.jar "$@"
+exec java  ${JAVA_OPTS} -jar webapp/skywalking-webapp.jar "$@"
