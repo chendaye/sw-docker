@@ -15,7 +15,7 @@ ENV JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk" \
     SW_OAP_ADDRESS="http://oap:12800" \
     SW_TIMEOUT="20000" \
     AUTH_URI="http://10.137.37.194:7777" \
-    AUTH_PATH="ath=/user/**"
+    AUTH_PATH="Path=/user/**"
 
 # 环境变量=默认值
 ARG SK_VERSION=8.8.1
