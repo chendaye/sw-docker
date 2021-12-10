@@ -3,6 +3,8 @@
 set -e
 
 export LOGGING_CONFIG="webapp/logback.xml"
+export WEBAPP_CONFIG="webapp/webapp.yml"
+export LOG_FILE_LOCATION="webapp/webapp.log"
 
 if [[ ! -z "$SW_OAP_ADDRESS" ]]; then
   address_arr=(${SW_OAP_ADDRESS//,/ })
@@ -12,9 +14,8 @@ if [[ ! -z "$SW_OAP_ADDRESS" ]]; then
   done
 fi
 
-# auth
-# JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.gateway.routes[1].id=auth"
-# JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.gateway.routes[1].uri=${AUTH_URI}"
-# JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.gateway.routes[1].predicates[0]=${AUTH_PATH}"
 
-exec java  ${JAVA_OPTS} -jar webapp/skywalking-webapp.jar "$@"
+
+exec java  ${JAVA_OPTS} -jar webapp/skywalking-webapp.jar --spring.config.location=${WEBAPP_CONFIG} --logging.file=${LOG_FILE_LOCATION} 
+
+

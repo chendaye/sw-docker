@@ -1,51 +1,40 @@
-FROM centos:7.5.1804
+# docker build --no-cache  --build-arg DIST=apache-skywalking-apm-bin.tar.gz --build-arg SKYWALKING_CLI_VERSION=0.7.0  -t skywalking/ui:latest  .
 
-LABEL maintainer="chendaye666@gmail.com"
+FROM adoptopenjdk/openjdk11:alpine-jre
 
-# set environment
-ENV JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk" \
-    JAVA="/usr/lib/jvm/java-1.8.0-openjdk/bin/java" \
-    JVM_XMS="1g" \
-    JVM_XMX="1g" \
-    JVM_XMN="512m" \
-    JVM_MS="128m" \
-    JVM_MMS="320m" \
-    TIME_ZONE="Asia/Shanghai" \
-    JAVA_OPTS=" -Xms256M " \
-    SW_OAP_ADDRESS="http://oap:12800" \
-    SW_TIMEOUT="20000" \
-    AUTH_URI="http://10.137.37.194:7777" \
-    AUTH_PATH="Path=/user/**"
+ENV JAVA_OPTS=" -Xms256M " \
+    SW_OAP_ADDRESS="http://oap:12800"
+    # SW_OAP_ADDRESS="http://127.0.0.1:12800"
 
-# 环境变量=默认值
-ARG SK_VERSION=8.8.1
 
-# work dir
-WORKDIR /opt/apache-skywalking-apm-bin
+# RUN sed -i 's/https/http/' /etc/apk/repositories \
+#     && apk add curl
+WORKDIR skywalking
 
-# install java
-RUN set -x \
-    && yum update -y \
-    && yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel wget iputils nc  vim libcurl
+RUN set -ex; \
+    apk add --no-cache \
+    bash
 
-# install skywalking
-ADD ./apache-skywalking-apm-bin.tar.gz /opt/
-RUN set -eux; \
-    rm -rf "config"; rm -rf "oap-libs"; \
-    rm -rf "agent"; rm -rf webapp/webapp.yml
+ARG DIST=apache-skywalking-apm-bin.tar.gz
+ARG SKYWALKING_CLI_VERSION
+COPY "$DIST" .
 
-# copy 配置以及启动文件
-COPY webapp.yml webapp/
+RUN sed -i 's/https/http/' /etc/apk/repositories; \
+    apk add curl; \
+    tar -xzf "$DIST" --strip 1; \
+    rm -rf "$DIST"; \
+    rm -rf "config"; \
+    rm -rf "bin"; \
+    rm -rf "oap-libs"; \
+    rm -rf "agent"; \
+    rm -rf "webapp/webapp.yml"; \
+    touch webapp/webapp.log;
+
 COPY logback.xml webapp/
+COPY webapp.yml webapp/
 COPY docker-entrypoint.sh .
 
 
-# delect cache
-RUN yum autoremove -y wget \
-    &&  echo $TIME_ZONE > /etc/timezone \
-    && yum clean all
+EXPOSE 8080
 
-
-
-EXPOSE 8180
 ENTRYPOINT ["bash", "docker-entrypoint.sh"]
